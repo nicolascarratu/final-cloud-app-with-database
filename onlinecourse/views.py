@@ -131,19 +131,25 @@ def show_exam_result(request, course_id, submission_id):
     selected_choices = submission.choices.all()
     total_score = 0
     
+    question_context = []
     
     for question in lesson.question_set.all():
         selected_for_question = set(choice for choice in selected_choices if choice.question == question)
-        print(set(question.choice_set.filter(is_correct=True)))
-        print(set(selected_for_question))
+        correct_choices = set(question.choice_set.filter(is_correct=True))
         if set(question.choice_set.filter(is_correct=True)) == selected_for_question:
            
-
             total_score += question.grade
+
+        question_context.append({
+            'question': question,
+            'correct_choice_ids': [choice.id for choice in correct_choices],
+            'selected_choice_ids': [choice.id for choice in selected_for_question],
+        })
+
 
     context = {
         'course': course,
-        'selected_ids': [choice.id for choice in selected_choices],
+        'question_context': question_context,
         'grade': total_score
     }
 
