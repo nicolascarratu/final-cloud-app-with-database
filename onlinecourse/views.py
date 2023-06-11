@@ -124,23 +124,21 @@ def submit(request, course_id):
 
 
 
-# <HINT> Create an exam result view to check if learner passed exam and show their question results and result for each question,
-# you may implement it based on the following logic:
-        # Get course and submission based on their ids
-        # Get the selected choice ids from the submission record
-        # For each selected choice, check if it is a correct answer or not
-        # Calculate the total score
-
-
 def show_exam_result(request, course_id, submission_id):
     course = get_object_or_404(Course, pk=course_id)
     lesson = get_object_or_404(Lesson, pk=course_id)
     submission = get_object_or_404(Submission, pk=submission_id)
     selected_choices = submission.choices.all()
     total_score = 0
-
+    
+    
     for question in lesson.question_set.all():
-        if set(question.choice_set.filter(is_correct=True)) == set(selected_choices):
+        selected_for_question = set(choice for choice in selected_choices if choice.question == question)
+        print(set(question.choice_set.filter(is_correct=True)))
+        print(set(selected_for_question))
+        if set(question.choice_set.filter(is_correct=True)) == selected_for_question:
+           
+
             total_score += question.grade
 
     context = {
